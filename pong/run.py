@@ -1,14 +1,12 @@
 import pygame as pg
 import sys
-import random
 
 # setup and vars
 pg.init()
 screen = pg.display.set_mode((1300, 500))
 clock = pg.time.Clock()
-game_active = True
-player1_y = 250
-player2_y = 250
+game_active = False
+single_player = False
 ball_x_direction, ball_y_direction = 6, 2
 player1_score, player2_score = 0, 0
 
@@ -50,14 +48,18 @@ text_font = pg.font.Font('pong/resources/font/Pixeltype.ttf', 80)
 player1_surf = pg.image.load('pong/resources/Paddle.png').convert_alpha()
 player2_surf = pg.image.load('pong/resources/Paddle.png').convert_alpha()
 ball_surf = pg.image.load('pong/resources/Ball.png').convert_alpha()
-game_over_surface = text_font.render('Game Over', False, 'Red').convert_alpha()
+game_over_surface = text_font.render('PONG', False, 'Red').convert_alpha()
 new_game_surf = text_font.render('Press Space To Start A New Game!', False, 'Red')
+options_surf_single = text_font.render(f'1. For Single Player Mode', False, 'Red')
+options_surf_multi = text_font.render('2. For 2 players Mode', False, 'Red')
 
-player1_rect = player1_surf.get_rect(center=(20, player1_y))
-player2_rect = player2_surf.get_rect(center=(1280, player2_y))
+player1_rect = player1_surf.get_rect(center=(20, 250))
+player2_rect = player2_surf.get_rect(center=(1280, 250))
 ball_rect = ball_surf.get_rect(center=(650, 250))
 game_over_rect = game_over_surface.get_rect(midbottom=(650, 100))
 new_game_rect = new_game_surf.get_rect(midbottom=(650, 400))
+options_single_rect = options_surf_single.get_rect(midbottom=(650, 350))
+options_multi_rect = options_surf_multi.get_rect(midbottom=(650, 450))
 
 while True:
     
@@ -72,12 +74,15 @@ while True:
     screen.blit(player2_surf, player2_rect)
     screen.blit(ball_surf, ball_rect)
     
-    update_score()
-    oppenent()
+
         
     if game_active:
 
         handle_input()
+        update_score()
+        
+        if single_player:
+            oppenent()
 
         # ball logic
         ball_rect.x += ball_x_direction
@@ -107,12 +112,18 @@ while True:
     else:
         screen.fill('Black')
         screen.blit(game_over_surface, game_over_rect)
-        screen.blit(new_game_surf, new_game_rect)
+        screen.blit(options_surf_single, options_single_rect)
+        screen.blit(options_surf_multi, options_multi_rect)
         keys = pg.key.get_pressed()
-        if keys[pg.K_SPACE]:
+        if keys[pg.K_1]:
             player1_score, player2_score = 0, 0
+            single_player = True
             game_active = True
-
+            
+        if keys[pg.K_2]:
+            player1_score, player2_score = 0, 0
+            single_player = False
+            game_active = True
 
     pg.display.flip()
     clock.tick(60)
